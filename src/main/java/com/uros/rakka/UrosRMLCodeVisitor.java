@@ -1,6 +1,5 @@
 package com.uros.rakka;
 
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,12 +14,11 @@ import com.uros.rakka.model.Thing;
 import com.uros.rml.UrosRMLBaseVisitor;
 import com.uros.rml.UrosRMLParser;
 
-
 public class UrosRMLCodeVisitor extends UrosRMLBaseVisitor<Object> {
 
     // 用于存储所有解析出来的 Thing 模型
     private final Map<String, Thing> things = new HashMap<>();
-    
+
     // 用于存储所有接口中定义的命令和事件消息
     private final Map<String, Message> messages = new HashMap<>();
 
@@ -29,7 +27,7 @@ public class UrosRMLCodeVisitor extends UrosRMLBaseVisitor<Object> {
         // 第一步: 遍历所有 interface，收集所有命令和事件
         // 这样在解析 Thing 的行为时，可以正确引用消息类型
         ctx.interface_().forEach(this::visit);
-        
+
         // 第二步: 遍历所有 thing，生成 Thing 模型
         ctx.thing().forEach(this::visit);
 
@@ -109,10 +107,10 @@ public class UrosRMLCodeVisitor extends UrosRMLBaseVisitor<Object> {
                 }
             });
         }
-        
+
         // 从messages中找到thing所引用的所有消息
         // ...
-        
+
         things.put(thing.name, thing);
         return thing;
     }
@@ -140,15 +138,15 @@ public class UrosRMLCodeVisitor extends UrosRMLBaseVisitor<Object> {
     private State createStateFromContext(UrosRMLParser.StateContext ctx) {
         State state = new State();
         state.name = ctx.ID().getText();
-        
+
         ctx.onRule().forEach(onRuleCtx -> {
             OnRule rule = new OnRule();
             String messageName = onRuleCtx.ID().getText();
             rule.message = messages.get(messageName);
-            
+
             // 暂时简化，不处理条件
             // if (onRuleCtx.condition() != null) {
-            //     rule.condition = visitCondition(onRuleCtx.condition());
+            // rule.condition = visitCondition(onRuleCtx.condition());
             // }
 
             // 提取动作并生成 Java 代码字符串
@@ -168,7 +166,7 @@ public class UrosRMLCodeVisitor extends UrosRMLBaseVisitor<Object> {
 
         return state;
     }
-    
+
     // 辅助方法：将 UrosRML 动作转换为 Java 代码字符串
     @Override
     public String visitAction(UrosRMLParser.ActionContext ctx) {
@@ -190,14 +188,14 @@ public class UrosRMLCodeVisitor extends UrosRMLBaseVisitor<Object> {
                 .collect(Collectors.joining(", "));
         return String.format("context.self().tell(new %s(%s));", toPascalCase(msgName) + "Event", params);
     }
-    
+
     @Override
     public String visitAssignAction(UrosRMLParser.AssignActionContext ctx) {
         String propName = ctx.ID(0).getText();
         String value = visitExpression(ctx.expression());
         return String.format("this.%s = %s;", propName, value);
     }
-    
+
     @Override
     public String visitIfAction(UrosRMLParser.IfActionContext ctx) {
         String condition = visitExpression(ctx.expression());
@@ -206,9 +204,9 @@ public class UrosRMLCodeVisitor extends UrosRMLBaseVisitor<Object> {
                 .collect(Collectors.joining("\n\t\t\t"));
         String elseBlock = "";
         if (ctx.ELSE() != null) {
-             elseBlock = ctx.actionBlock(1).action().stream()
-                .map(this::visitAction)
-                .collect(Collectors.joining("\n\t\t\t"));
+            elseBlock = ctx.actionBlock(1).action().stream()
+                    .map(this::visitAction)
+                    .collect(Collectors.joining("\n\t\t\t"));
         }
         return String.format("if (%s) {\n\t\t\t%s\n\t\t} else {\n\t\t\t%s\n\t\t}", condition, ifBlock, elseBlock);
     }
@@ -223,17 +221,21 @@ public class UrosRMLCodeVisitor extends UrosRMLBaseVisitor<Object> {
             String op = ctx.op().getText();
             return String.format("(%s %s %s)", left, op, right);
         } else if (ctx.ID() != null) {
-             return ctx.ID().getText();
+            return ctx.ID().getText();
         }
         return ctx.getText();
     }
-    
+
     @Override
     public String visitValue(UrosRMLParser.ValueContext ctx) {
-        if (ctx.BOOLEAN_LITERAL() != null) return ctx.BOOLEAN_LITERAL().getText();
-        if (ctx.UINT8_LITERAL() != null) return ctx.UINT8_LITERAL().getText();
-        if (ctx.INT32_LITERAL() != null) return ctx.INT32_LITERAL().getText();
-        if (ctx.STRING_LITERAL() != null) return ctx.STRING_LITERAL().getText();
+        if (ctx.BOOLEAN_LITERAL() != null)
+            return ctx.BOOLEAN_LITERAL().getText();
+        if (ctx.UINT8_LITERAL() != null)
+            return ctx.UINT8_LITERAL().getText();
+        if (ctx.INT32_LITERAL() != null)
+            return ctx.INT32_LITERAL().getText();
+        if (ctx.STRING_LITERAL() != null)
+            return ctx.STRING_LITERAL().getText();
         return ctx.getText();
     }
 
@@ -258,14 +260,19 @@ public class UrosRMLCodeVisitor extends UrosRMLBaseVisitor<Object> {
 
     private String mapUrosRMLTypeToJava(String urosRMLType) {
         switch (urosRMLType) {
-            case "boolean": return "boolean";
-            case "UInt8": return "byte";
-            case "Int32": return "int";
-            case "String": return "String";
-            default: return "Object"; // Fallback for unknown types
+            case "boolean":
+                return "boolean";
+            case "UInt8":
+                return "byte";
+            case "Int32":
+                return "int";
+            case "String":
+                return "String";
+            default:
+                return "Object"; // Fallback for unknown types
         }
     }
-    
+
     private String toPascalCase(String s) {
         return s.substring(0, 1).toUpperCase() + s.substring(1);
     }

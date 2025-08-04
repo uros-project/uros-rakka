@@ -4,22 +4,22 @@ This project is a code generator that translates a custom Domain-Specific Langua
 
 The generator's design emphasizes the separation of concerns:
 
-  * The ANTLR parser and visitor handle the syntactic analysis of the DSL.
-  * The visitor builds a clean data model from the parsed tree.
-  * FreeMarker templates use this data model to generate the final, well-structured Java code.
+* The ANTLR parser and visitor handle the syntactic analysis of the DSL.
+* The visitor builds a clean data model from the parsed tree.
+* FreeMarker templates use this data model to generate the final, well-structured Java code.
 
 ## Features
 
-  * **DSL Parsing:** Parses a `.urosrml` file that defines IoT device interfaces and behaviors.
-  * **Akka Actor Generation:** Automatically creates Java Akka Actor classes that implement the behavior defined in the DSL.
-  * **Template-Based:** The generated code's structure and style can be easily customized by modifying the FreeMarker template files.
-  * **Modular Design:** The parsing logic and code templates are decoupled, making the system flexible and easy to maintain.
-  * **Maven Integration:** Uses Maven for build automation and dependency management.
+* **DSL Parsing:** Parses a `.urosrml` file that defines IoT device interfaces and behaviors.
+* **Akka Actor Generation:** Automatically creates Java Akka Actor classes that implement the behavior defined in the DSL.
+* **Template-Based:** The generated code's structure and style can be easily customized by modifying the FreeMarker template files.
+* **Modular Design:** The parsing logic and code templates are decoupled, making the system flexible and easy to maintain.
+* **Maven Integration:** Uses Maven for build automation and dependency management.
 
 ## Prerequisites
 
-  * Java Development Kit (JDK) 11 or newer
-  * Apache Maven
+* Java Development Kit (JDK) 11 or newer
+* Apache Maven
 
 ## Project Structure
 
@@ -58,9 +58,9 @@ mvn clean install
 
 This command will:
 
-  * Download all dependencies.
-  * Run the `antlr4-maven-plugin` to generate `UrosRMLParser.java`, `UrosRMLLexer.java`, etc., in the `target/generated-sources/antlr4` directory.
-  * Compile all Java source code.
+* Download all dependencies.
+* Run the `antlr4-maven-plugin` to generate `UrosRMLParser.java`, `UrosRMLLexer.java`, etc., in the `target/generated-sources/antlr4` directory.
+* Compile all Java source code.
 
 ### 2\. Prepare Your DSL File
 
@@ -173,5 +173,5 @@ public class LightBulbActor extends AbstractBehavior<Object> {
 
 The power of this project lies in its templating. You can easily modify the code generation output by editing the `.ftl` files located in `src/main/resources/templates/`.
 
-  * **`actor.ftl`**: Edit this file to change the structure of the Akka Actor class. You can add new methods, change class names, or alter the logic.
-  * **`message.ftl`**: Modify this file to change how command and event message classes are generated.
+* **`actor.ftl`**: Edit this file to change the structure of the Akka Actor class. You can add new methods, change class names, or alter the logic.
+* **`message.ftl`**: Modify this file to change how command and event message classes are generated.
